@@ -3,7 +3,7 @@ class TodosController < ApplicationController
     render json: Todo.all
     return Todo.all
   end
-
+  # ここは6/16に実験
   def post
     todo = Todo.create(name: params[:name])
     render json: todo
@@ -15,6 +15,7 @@ class TodosController < ApplicationController
     return Todo.where(name: params[:name])
   end
 
+  # ここは6/16に実験
   def delete
     todo = Todo.find_by(id: params[:id])
     render json: todo
