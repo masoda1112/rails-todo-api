@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_15_083502) do
+ActiveRecord::Schema.define(version: 2021_06_16_123954) do
 
   create_table "tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "name"
@@ -24,6 +24,10 @@ ActiveRecord::Schema.define(version: 2021_06_15_083502) do
     t.integer "tag_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "todos_id"
+    t.bigint "tags_id"
+    t.index ["tags_id"], name: "index_todo_tags_on_tags_id"
+    t.index ["todos_id"], name: "index_todo_tags_on_todos_id"
   end
 
   create_table "todos", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -32,4 +36,6 @@ ActiveRecord::Schema.define(version: 2021_06_15_083502) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "todo_tags", "tags", column: "tags_id"
+  add_foreign_key "todo_tags", "todos", column: "todos_id"
 end

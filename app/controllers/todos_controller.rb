@@ -1,9 +1,15 @@
 class TodosController < ApplicationController
   def index
-    todoList = Todo.all
-    render json: todoList
-    # todoに紐づくtagもリストアップ
+    # todo_listにTodoの全てを格納
+  
+    # 1todolistとtodoTagを結合
+    # 21とtagを結合
+    # 32をグループ化する
+  
+    new_todos = Todo.joins(:TodoTag)
+    render json: Todo.all
   end
+
   # ここは6/16に実験
   def create
     render json: Todo.create(name: params[:name])
