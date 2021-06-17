@@ -1,13 +1,15 @@
 class TodosController < ApplicationController
   def index
-    # todo_listにTodoの全てを格納
-  
-    # 1todolistとtodoTagを結合
-    # 21とtagを結合
-    # 32をグループ化する
-  
-    new_todos = Todo.joins(:TodoTag)
-    render json: Todo.all
+    new_todos = Todo.joins(todo_tags: :tag).select(" todos.id, todos.name, label")
+    todos = Todo.all
+    new_todos_2 = todos.map do |t|
+      tags = new_todos.where(id: t.id)
+      {
+        "name": t.name,
+        "label": tags.pluck(:label)
+      }
+    end
+    render json: new_todos_2
   end
 
   # ここは6/16に実験

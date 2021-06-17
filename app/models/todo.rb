@@ -1,3 +1,3 @@
 class Todo < ApplicationRecord
-  has_many :TodoTag
+  has_many :todo_tags
 end

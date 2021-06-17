@@ -1,4 +1,4 @@
 class TodoTag < ApplicationRecord
-  belongs_to :Todo 
-  belongs_to :Tag
+  belongs_to :todo
+  belongs_to :tag
 end
