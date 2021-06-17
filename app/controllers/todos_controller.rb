@@ -15,10 +15,10 @@ class TodosController < ApplicationController
   # ここは6/16に実験
   def create
     todo = Todo.create(name: params[:name])
-    tags = params[:tags]
+    tag_id = params[:tags_id]
 
-    tags.map do |t|
-      TodoTag.create(todo_id: todo.id, tag_id: t.id)
+    tag_id.map do |t|
+      TodoTag.create(todo_id: todo.id, tag_id: t)
     end
 
     render json: todo
