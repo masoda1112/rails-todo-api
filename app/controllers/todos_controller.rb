@@ -1,10 +1,13 @@
 class TodosController < ApplicationController
   def index
     new_todos = Todo.joins(todo_tags: :tag).select(" todos.id, todos.name, label")
+
     todos = Todo.all
+
     new_todos_2 = todos.map do |t|
       tags = new_todos.where(id: t.id)
       {
+        "id": t.id,
         "name": t.name,
         "label": tags.pluck(:label)
       }
@@ -26,7 +29,18 @@ class TodosController < ApplicationController
   end
 
   def search
-    render json: Todo.where(name: params[:name])
+    new_todos = Todo.joins(todo_tags: :tag).select(" todos.id, todos.name, label")
+    todos = Todo.where(name: params[:name])
+    new_todos_2 = todos.map do |t|
+      tags = new_todos.where(id: t.id)
+      {
+        "id": t.id,
+        "name": t.name,
+        "label": tags.pluck(:label)
+      }
+    end
+    render json: new_todos_2
+
     # 部分一致で行けるようにしたい
   end
 
