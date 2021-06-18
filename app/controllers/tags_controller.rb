@@ -14,6 +14,7 @@ class TagsController < ApplicationController
     return tag
   end
 
+  # ここは6/16に実験
   def add
   end
 end
