@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_16_123954) do
+ActiveRecord::Schema.define(version: 2021_06_21_103018) do
 
   create_table "tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "name"
@@ -31,9 +31,12 @@ ActiveRecord::Schema.define(version: 2021_06_16_123954) do
   end
 
   create_table "todos", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.text "name"
+    t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "expiration_time"
+    t.boolean "is_finished", default: false, null: false
+    t.boolean "is_expired", default: false, null: false
   end
 
   add_foreign_key "todo_tags", "tags", column: "tags_id"
