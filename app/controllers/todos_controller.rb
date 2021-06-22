@@ -19,6 +19,7 @@ require 'date'
       "id": todo.id,
       "name": todo.name,
       "expiration_time": todo.expiration_time,
+      "status": todo.save,
       "error_message": todo.errors.full_messages
     }
     render json: response
@@ -50,19 +51,26 @@ require 'date'
   private
   def update_is_expired(todos)
     just_time = Time.at(Time.now.to_i)
-    todos.map do |t|
+    new_todos = todos.map do |t|
       # 仮で入れておく
-       todo_extension = (Time.at(t.expiration_time) - just_time).to_i;
+      todo_year_extension = (t.expiration_time.year - just_time.year).to_i;
+      todo_month_extension = (t.expiration_time.month - just_time.month).to_i;
+      todo_day_extension = (t.expiration_time.day - just_time.day).to_i;
+      todo_hour_extension = (t.expiration_time.hour - just_time.hour).to_i;
+      todo_min_extension = (t.expiration_time.min - just_time.min).to_i;
       #  todo_extension = 10
-        if todo_extension <= 0 && t.is_finished == false then
-         t.is_expired == true
+        if todo_year_extension <= 0 &&
+           todo_month_extension <= 0 &&
+           todo_day_extension <= 0 &&
+           todo_hour_extension <= 0 &&
+           t.is_finished == false then
+          t.is_expired == true
         end
     end
-    return todos
+    return new_todos
   end
 
   def build_todo_response(todos)
-    just_time = Time.at(Time.new.to_i)
     new_todos = todos.map do |t|
       labels = t.tags.pluck(:label)
       expiration_message = build_expiration_message(t.expiration_time)
@@ -71,8 +79,7 @@ require 'date'
         "name": t.name,
         "label": labels,
         "expiration_message": expiration_message,
-        "expriration_time": t.expiration_time,
-        "just_time": just_time,
+        "expiration_time": t.expiration_time,
         "is_finished": t.is_finished,
       }
     end
