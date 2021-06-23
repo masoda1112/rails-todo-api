@@ -10,19 +10,22 @@ class TodosController < ApplicationController
 
   # ここは6/16に実験
   def create
-    todo = Todo.create(name: params[:name], expiration_time: params[:expiration_time], is_finished: false)
-    tag_id = params[:tags_id]
-    tag_id.map do |t|
-      TodoTag.create(todo_id: todo.id, tag_id: t)
+    todo = Todo.new(name: params[:name], expiration_time: params[:expiration_time], is_finished: false)
+
+    if todo.save
+      tag_id = params[:tags_id]
+      tag_id.map do |t|
+        TodoTag.create(todo_id: todo.id, tag_id: t)
+      end
+      response = {
+        "id": todo.id,
+        "name": todo.name,
+        "expiration_time": todo.expiration_time,
+      }
+      render status: 200, json: response
+    else
+      response_bad_request
     end
-    response = {
-      "id": todo.id,
-      "name": todo.name,
-      "expiration_time": todo.expiration_time,
-      "status": todo.save,
-      "error_message": todo.errors.full_messages
-    }
-    render json: response
     # todoに紐づくtagも追加
   end
 
@@ -33,10 +36,16 @@ class TodosController < ApplicationController
   end
 
   def search
-    todos = Todo.where(name: params[:name])
-    new_todos = build_todo_response(todos)
-    render json: new_todos
-
+    request_name = params[:name]
+    todos = Todo.where("name LIKE ?", "%#{request_name}%")
+    unless todos
+      all_todos = Todo.all
+      response = build_todo_response(all_todos)
+      render response
+    else
+      response = build_todo_response(todos)
+      render json: response
+    end
     # 部分一致で行けるようにしたい
   end
 
@@ -99,6 +108,10 @@ class TodosController < ApplicationController
       else
         ("時間はあります！焦らないでやりましょう！")
       end
+  end
+
+  def response_bad_request
+    render status: 500, json: { status: 500, message: '同じ名前のTODOが存在します' }
   end
   
 end
