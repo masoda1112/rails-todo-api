@@ -1,5 +1,5 @@
 class TodosController < ApplicationController
-require 'date'
+
   def index
 		todos = Todo.all
     update_is_expired(todos)
@@ -50,21 +50,13 @@ require 'date'
   # private以下は外部から呼び出せない
   private
   def update_is_expired(todos)
-    just_time = Time.at(Time.now.to_i)
+    just_time = Time.zone.now
     new_todos = todos.map do |t|
       # 仮で入れておく
-      todo_year_extension = (t.expiration_time.year - just_time.year).to_i;
-      todo_month_extension = (t.expiration_time.month - just_time.month).to_i;
-      todo_day_extension = (t.expiration_time.day - just_time.day).to_i;
-      todo_hour_extension = (t.expiration_time.hour - just_time.hour).to_i;
-      todo_min_extension = (t.expiration_time.min - just_time.min).to_i;
+      todo_extension = (t.expiration_time - just_time).floor / 60
       #  todo_extension = 10
-        if todo_year_extension <= 0 &&
-           todo_month_extension <= 0 &&
-           todo_day_extension <= 0 &&
-           todo_hour_extension <= 0 &&
-           t.is_finished == false then
-          t.is_expired == true
+        if todo_extension <= 0 && t.is_finished == false then
+          t.update(is_expired: true)
         end
     end
     return new_todos
@@ -80,41 +72,29 @@ require 'date'
         "label": labels,
         "expiration_message": expiration_message,
         "expiration_time": t.expiration_time,
+        "is_expired": t.is_expired,
         "is_finished": t.is_finished,
       }
     end
   end
 
   def build_expiration_message(expiration_time)
-    just_time = Time.at(Time.now.to_i)
+    just_time = Time.zone.now
     # 仮で入れておく
-    todo_year_extension = (expiration_time.year - just_time.year).to_i;
-    todo_month_extension = (expiration_time.month - just_time.month).to_i;
-    todo_day_extension = (expiration_time.day - just_time.day).to_i;
-    todo_hour_extension = (expiration_time.hour - just_time.hour).to_i;
-    todo_min_extension = (Time.at(expiration_time).min - just_time.min).to_i;
+    todo_extension = (expiration_time - just_time).floor / 60
 
     # todo_extension = 10
     expirationMessage = 
-      if todo_year_extension = 0 &&
-         todo_mounth_extension = 0 && 
-         todo_day_extension = 0 && 
-         todo_hour_extension = 0 && todo_min_extension <= 1 && 
-         todo_min_extension >= 0 then
+      if todo_extension <= 1 && 
+        todo_extension >= 0 then
         ("まもなくタスクの終了期限です！")
-      elsif todo_year_extension = 0 && 
-        todo_mounth_extension = 0 && 
-        todo_day_extension = 0 && 
-        todo_hour_extension = 0 && 
-        todo_min_extension <= 10 && 
-        todo_min_extension > 1 then
+      elsif 
+        todo_extension <= 10 && 
+        todo_extension > 1 then
         ("残り10分です！")
-      elsif todo_year_extension = 0 &&
-         todo_mounth_extension = 0 && 
-         todo_day_extension = 0 && 
-         todo_hour_extension = 0 && 
-         todo_min_extension <= 60 && 
-         todo_min_extension > 10 then
+      elsif 
+        todo_extension <= 60 && 
+        todo_extension > 10 then
         ("終了まで１時間を切りました！")
       else
         ("時間はあります！焦らないでやりましょう！")
