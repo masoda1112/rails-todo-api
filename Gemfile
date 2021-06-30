@@ -56,3 +56,8 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'rack-cors'
+
+gem 'sqlite3', group: [:development, :test]
+
+gem "devise"
+gem "devise_token_auth"
